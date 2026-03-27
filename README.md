@@ -42,6 +42,82 @@ git clone https://github.com/dcamp2/dcamp_designsystem.git
 cp -r dcamp_designsystem/skills/ui-standards ~/.claude/skills/ui-standards
 ```
 
+## 적용 방식
+
+이 스킬은 `user-invocable: false`로 설정되어 있어서, **별도 호출 없이 프론트엔드 코드 작성 시 자동 적용**됩니다.
+
+### 글로벌 설치 (위 방법대로 설치한 경우)
+
+`~/.claude/skills/`에 설치되므로 **모든 프로젝트**에서 프론트엔드 작업 시 자동 적용됩니다.
+그냥 작업을 요청하면 됩니다:
+
+```
+> 산업분야 분포 차트 만들어줘
+> KPI 카드 5개짜리 대시보드 페이지 추가해줘
+> 이 테이블을 Card 안에 넣어줘
+```
+
+### 특정 프로젝트에서만 사용하고 싶은 경우
+
+프로젝트 루트에 `.claude/skills/` 디렉토리로 설치하세요:
+
+```bash
+# 프로젝트 디렉토리에서 실행
+mkdir -p .claude/skills/ui-standards/references
+cp -r ~/.claude/skills/ui-standards/* .claude/skills/ui-standards/
+```
+
+### 프로젝트 CLAUDE.md에 명시하기 (권장)
+
+프로젝트의 `CLAUDE.md`에 다음을 추가하면 Claude가 더 확실하게 디자인 시스템을 인식합니다:
+
+```markdown
+## UI Standards
+- 이 프로젝트는 dcamp Design System(`ui-standards` 스킬)을 따릅니다
+- 프론트엔드 코드 작성 시 ui-standards 스킬의 규칙을 준수하세요
+- shadcn/ui base-nova 스타일, OKLCH neutral 팔레트, Pretendard 폰트 사용
+```
+
+### 사용 예시
+
+#### 새 페이지 생성
+
+```
+> 7기 지원 현황 대시보드 페이지 만들어줘
+```
+
+Claude가 자동으로 적용하는 것:
+- 페이지 헤더 (text-xl md:text-2xl font-bold)
+- KPI 카드 그리드 (grid-cols-2 lg:grid-cols-5)
+- 차트는 lazy-charts.tsx 통해 lazy loading
+- 숫자는 formatNumber/formatValuation으로 포맷
+- space-y-6 수직 리듬
+- 스켈레톤 로딩 상태
+
+#### 새 차트 추가
+
+```
+> 지역별 분포 수평 막대 차트 추가해줘
+```
+
+Claude가 자동으로 적용하는 것:
+- Card > CardHeader > CardContent > ResponsiveContainer 구조
+- LOCATION_COLORS 팔레트 사용
+- TOOLTIP_STYLE, AXIS_TICK_STYLE, GRID_STYLE 적용
+- 동적 높이 계산 (Math.max(350, data.length * 32))
+- lazy-charts.tsx에 Lazy* export 등록
+
+#### 기존 컴포넌트 수정
+
+```
+> 이 필터 바에 산업분야 필터 추가해줘
+```
+
+Claude가 자동으로 적용하는 것:
+- Button variant="secondary" (활성) / "ghost" (비활성)
+- size="sm" className="text-xs h-7"
+- 구분선: w-px h-4 bg-border mx-1
+
 ## 설치 확인
 
 Claude Code를 실행한 후 스킬 목록에 `ui-standards`가 있는지 확인하세요:
