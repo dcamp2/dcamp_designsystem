@@ -7,6 +7,8 @@ REPO="dcamp2/dcamp_designsystem"
 BRANCH="main"
 BASE_URL="https://raw.githubusercontent.com/${REPO}/${BRANCH}"
 SKILL_DIR="$HOME/.claude/skills/ui-standards"
+CLAUDE_MD="$HOME/.claude/CLAUDE.md"
+DIRECTIVE="- 모든 프론트엔드 코드는 반드시 ui-standards 스킬을 참조하여 작성할 것 (dcamp Design System)"
 
 echo "=== dcamp Design System Installer ==="
 echo ""
@@ -29,6 +31,22 @@ curl -fsSL "${BASE_URL}/skills/ui-standards/references/chart-standards.md" -o "$
 
 echo "Downloading app-scaffold.md..."
 curl -fsSL "${BASE_URL}/skills/ui-standards/references/app-scaffold.md" -o "${SKILL_DIR}/references/app-scaffold.md"
+
+# Add directive to global CLAUDE.md (idempotent)
+if [ -f "$CLAUDE_MD" ]; then
+  if ! grep -qF "ui-standards" "$CLAUDE_MD"; then
+    echo "" >> "$CLAUDE_MD"
+    echo "$DIRECTIVE" >> "$CLAUDE_MD"
+    echo "Added ui-standards directive to $CLAUDE_MD"
+  else
+    echo "ui-standards directive already exists in $CLAUDE_MD"
+  fi
+else
+  echo "# CLAUDE.md" > "$CLAUDE_MD"
+  echo "" >> "$CLAUDE_MD"
+  echo "$DIRECTIVE" >> "$CLAUDE_MD"
+  echo "Created $CLAUDE_MD with ui-standards directive"
+fi
 
 echo ""
 echo "Installed to: ${SKILL_DIR}"
